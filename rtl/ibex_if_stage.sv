@@ -329,8 +329,17 @@ module ibex_if_stage #(
   // IF-ID pipeline registers, frozen when the ID stage is stalled
   assign if_id_pipe_reg_we = instr_new_id_d;
 
-  always_ff @(posedge clk_i) begin
-    if (if_id_pipe_reg_we) begin
+  always_ff @(posedge clk_i or negedge rst_ni) begin
+    if (!rst_ni) begin
+      instr_rdata_id_o         <= 32'h00000000;
+      instr_rdata_alu_id_o     <= 32'h00000000;
+      instr_fetch_err_o        <= 1'b0;
+      instr_fetch_err_plus2_o  <= 1'b0;
+      instr_rdata_c_id_o       <= 16'h0000;
+      instr_is_compressed_id_o <= 1'b0;
+      illegal_c_insn_id_o      <= 1'b0
+      pc_id_o                  <= 32'h00000000;
+    end else if (if_id_pipe_reg_we) begin
       instr_rdata_id_o         <= instr_out;
       // To reduce fan-out and help timing from the instr_rdata_id flops they are replicated.
       instr_rdata_alu_id_o     <= instr_out;

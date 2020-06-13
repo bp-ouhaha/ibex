@@ -145,7 +145,9 @@ module ibex_fetch_fifo #(
                                    // Increment address by 4 or 2
                                    {29'd0,~addr_incr_two,addr_incr_two});
 
-  always_ff @(posedge clk_i) begin
+  always_ff @(posedge clk_i or negedge rst_ni) begin
+    if (!rst_ni) begin
+      instr_addr_q <= 31'h00000000;
     if (instr_addr_en) begin
       instr_addr_q <= instr_addr_d;
     end
@@ -220,8 +222,11 @@ module ibex_fetch_fifo #(
   end
 
   for (genvar i = 0; i < DEPTH; i++) begin : g_fifo_regs
-    always_ff @(posedge clk_i) begin
-      if (entry_en[i]) begin
+    always_ff @(posedge clk_i or negedge rst_ni) begin
+      if (!rst_ni) begin
+        rdata_q[i]   <= 32'h00000000;
+        err_q[i]     <= 1'b0;
+      end else if (entry_en[i]) begin
         rdata_q[i]   <= rdata_d[i];
         err_q[i]     <= err_d[i];
       end

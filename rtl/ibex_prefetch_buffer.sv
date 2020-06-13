@@ -166,8 +166,10 @@ module ibex_prefetch_buffer (
   assign stored_addr_d = instr_addr;
 
   // CPU resets with a branch, so no need to reset these addresses
-  always_ff @(posedge clk_i) begin
-    if (stored_addr_en) begin
+  always_ff @(posedge clk_i or negedge rst_ni) begin
+    if (!rst_ni) begin
+      stored_addr_q <= 32'h00000000;
+    end else if (stored_addr_en) begin
       stored_addr_q <= stored_addr_d;
     end
   end
@@ -182,8 +184,10 @@ module ibex_prefetch_buffer (
                         // Current address + 4
                         {{29{1'b0}},(valid_new_req & ~valid_req_q),2'b00};
 
-  always_ff @(posedge clk_i) begin
-    if (fetch_addr_en) begin
+  always_ff @(posedge clk_i or negedge rst_ni) begin
+    if (!rst_ni) begin
+      fetch_addr_q <= 32'h00000000;
+    end else if (fetch_addr_en) begin
       fetch_addr_q <= fetch_addr_d;
     end
   end
