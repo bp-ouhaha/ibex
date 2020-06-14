@@ -148,7 +148,7 @@ module ibex_fetch_fifo #(
   always_ff @(posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) begin
       instr_addr_q <= 31'h00000000;
-    if (instr_addr_en) begin
+    end else if (instr_addr_en) begin
       instr_addr_q <= instr_addr_d;
     end
   end
