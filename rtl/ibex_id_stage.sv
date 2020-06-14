@@ -28,6 +28,8 @@ module ibex_id_stage #(
     input  logic                      clk_i,
     input  logic                      rst_ni,
 
+    input  logic                      test_en_i,     // enable all clock gates for testing
+
     input  logic                      fetch_enable_i,
     output logic                      ctrl_busy_o,
     output logic                      illegal_insn_o,
@@ -379,8 +381,15 @@ module ibex_id_stage #(
   /////////////////////////////////////////
   // Multicycle Operation Stage Register //
   /////////////////////////////////////////
+  logic clk_int;
+  prim_clock_gating cg_i (
+      .clk_i     ( clk_i           ),
+      .en_i      ( imd_val_we_ex_i ),
+      .test_en_i ( test_en_i       ),
+      .clk_o     ( clk_int         )
+  );
 
-  always_ff @(posedge clk_i or negedge rst_ni) begin : intermediate_val_reg
+  always_ff @(posedge clk_int or negedge rst_ni) begin : intermediate_val_reg
     if (!rst_ni) begin
       imd_val_q <= '0;
     end else if (imd_val_we_ex_i) begin

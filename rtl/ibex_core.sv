@@ -381,6 +381,8 @@ module ibex_core #(
       .clk_i                    ( clk                    ),
       .rst_ni                   ( rst_ni                 ),
 
+      .test_en_i                ( test_en_i              ),
+
       .boot_addr_i              ( boot_addr_i            ),
       .req_i                    ( instr_req_int          ), // instruction request control
 
@@ -458,6 +460,8 @@ module ibex_core #(
   ) id_stage_i (
       .clk_i                        ( clk                      ),
       .rst_ni                       ( rst_ni                   ),
+
+      .test_en_i                    ( test_en_i                ),
 
       // Processor Enable
       .fetch_enable_i               ( fetch_enable_i           ),
@@ -659,6 +663,8 @@ module ibex_core #(
   ibex_load_store_unit load_store_unit_i (
       .clk_i                 ( clk                 ),
       .rst_ni                ( rst_ni              ),
+
+      .test_en_i             ( test_en_i           ),
 
       // data interface
       .data_req_o            ( data_req_out        ),

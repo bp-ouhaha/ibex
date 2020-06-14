@@ -18,6 +18,8 @@ module ibex_load_store_unit
     input  logic         clk_i,
     input  logic         rst_ni,
 
+    input  logic         test_en_i,     // enable all clock gates for testing
+
     // data interface
     output logic         data_req_o,
     input  logic         data_gnt_i,
@@ -181,8 +183,15 @@ module ibex_load_store_unit
   // RData alignment //
   /////////////////////
 
+  logic clk_int_rdata;
+  prim_clock_gating cg_i (
+      .clk_i     ( clk_i         ),
+      .en_i      ( rdata_update  ),
+      .test_en_i ( test_en_i     ),
+      .clk_o     ( clk_int_rdata )
+  );
   // register for unaligned rdata
-  always_ff @(posedge clk_i or negedge rst_ni) begin
+  always_ff @(posedge clk_int_rdata or negedge rst_ni) begin
     if (!rst_ni) begin
       rdata_q <= '0;
     end else if (rdata_update) begin
@@ -205,9 +214,16 @@ module ibex_load_store_unit
     end
   end
 
+  logic clk_int_addr;
+  prim_clock_gating cg_i (
+      .clk_i     ( clk_i        ),
+      .en_i      ( addr_update  ),
+      .test_en_i ( test_en_i    ),
+      .clk_o     ( clk_int_addr )
+  );
   // Store last address for mtval + AGU for misaligned transactions.
   // Do not update in case of errors, mtval needs the (first) failing address
-  always_ff @(posedge clk_i or negedge rst_ni) begin
+  always_ff @(posedge clk_int_addr or negedge rst_ni) begin
     if (!rst_ni) begin
       addr_last_q <= '0;
     end else if (addr_update) begin
