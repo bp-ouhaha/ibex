@@ -184,7 +184,7 @@ module ibex_load_store_unit
   /////////////////////
 
   logic clk_int_rdata;
-  prim_clock_gating cg_i (
+  prim_clock_gating cg_rdata_i (
       .clk_i     ( clk_i         ),
       .en_i      ( rdata_update  ),
       .test_en_i ( test_en_i     ),
@@ -215,7 +215,7 @@ module ibex_load_store_unit
   end
 
   logic clk_int_addr;
-  prim_clock_gating cg_i (
+  prim_clock_gating cg_addr_i (
       .clk_i     ( clk_i        ),
       .en_i      ( addr_update  ),
       .test_en_i ( test_en_i    ),
