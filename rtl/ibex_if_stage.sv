@@ -337,7 +337,7 @@ module ibex_if_stage #(
       instr_fetch_err_plus2_o  <= 1'b0;
       instr_rdata_c_id_o       <= 16'h0000;
       instr_is_compressed_id_o <= 1'b0;
-      illegal_c_insn_id_o      <= 1'b0
+      illegal_c_insn_id_o      <= 1'b0;
       pc_id_o                  <= 32'h00000000;
     end else if (if_id_pipe_reg_we) begin
       instr_rdata_id_o         <= instr_out;
