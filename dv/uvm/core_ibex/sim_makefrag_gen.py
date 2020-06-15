@@ -94,10 +94,12 @@ def main():
         'Generates a makefile fragment for use with the Ibex DV makefile that '
         'sets up sim specific variables'))
 
-    sim_fns = {'vcs'    : gen_vcs_makefrag,
-               'riviera': gen_riviera_makefrag,
-               'xlm'    : gen_xlm_makefrag,
-               'questa' : gen_questa_makefrag}
+    sim_fns = {
+        'vcs': gen_vcs_makefrag,
+        'riviera': gen_riviera_makefrag,
+        'xlm': gen_xlm_makefrag,
+        'questa': gen_questa_makefrag
+        }
 
     argparser.add_argument('sim',
                            help='Name of the simulator',
