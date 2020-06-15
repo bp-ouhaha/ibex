@@ -617,6 +617,8 @@ module ibex_core #(
       .clk_i                    ( clk                      ),
       .rst_ni                   ( rst_ni                   ),
 
+      .test_en_i                ( test_en_i                ),
+
       // ALU signal from ID stage
       .alu_operator_i           ( alu_operator_ex          ),
       .alu_operand_a_i          ( alu_operand_a_ex         ),

@@ -17,6 +17,8 @@ module ibex_ex_block #(
     input  logic                  clk_i,
     input  logic                  rst_ni,
 
+    input  logic                  test_en_i,     // enable all clock gates for testing
+
     // ALU
     input  ibex_pkg::alu_op_e     alu_operator_i,
     input  logic [31:0]           alu_operand_a_i,
@@ -165,6 +167,7 @@ module ibex_ex_block #(
     ) multdiv_i                (
         .clk_i                 ( clk_i                 ),
         .rst_ni                ( rst_ni                ),
+        .test_en_i             ( test_en_i             ),
         .mult_en_i             ( mult_en_i             ),
         .div_en_i              ( div_en_i              ),
         .mult_sel_i            ( mult_sel_i            ),
