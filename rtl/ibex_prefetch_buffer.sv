@@ -102,6 +102,8 @@ module ibex_prefetch_buffer (
       .clk_i                 ( clk_i             ),
       .rst_ni                ( rst_ni            ),
 
+      .test_en_i             ( test_en_i         ),
+
       .clear_i               ( fifo_clear        ),
       .busy_o                ( fifo_busy         ),
 
