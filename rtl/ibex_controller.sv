@@ -403,6 +403,8 @@ module ibex_controller #(
         pc_set_spec_o = 1'b1;
         if (fetch_enable_i) begin
           ctrl_fsm_ns = BOOT_SET;
+        end else begin
+          ctrl_busy_o = 1'b0;
         end
       end
 
