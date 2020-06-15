@@ -13,6 +13,8 @@ module ibex_prefetch_buffer (
     input  logic        clk_i,
     input  logic        rst_ni,
 
+    input  logic        test_en_i,     // enable all clock gates for testing
+
     input  logic        req_i,
 
     input  logic        branch_i,
@@ -165,8 +167,15 @@ module ibex_prefetch_buffer (
   // Store whatever address was issued on the bus
   assign stored_addr_d = instr_addr;
 
+  logic clk_int_stored;
+  prim_clock_gating cg_stored_i (
+      .clk_i     ( clk_i          ),
+      .en_i      ( stored_addr_en ),
+      .test_en_i ( test_en_i      ),
+      .clk_o     ( clk_int_stored )
+  );
   // CPU resets with a branch, so no need to reset these addresses
-  always_ff @(posedge clk_i or negedge rst_ni) begin
+  always_ff @(posedge clk_int_stored or negedge rst_ni) begin
     if (!rst_ni) begin
       stored_addr_q <= 32'h00000000;
     end else if (stored_addr_en) begin
@@ -176,6 +185,13 @@ module ibex_prefetch_buffer (
 
   // 2. fetch_addr_q
 
+  logic clk_int_fetch;
+  prim_clock_gating cg_fetch_i (
+      .clk_i     ( clk_i         ),
+      .en_i      ( fetch_addr_en ),
+      .test_en_i ( test_en_i     ),
+      .clk_o     ( clk_int_fetch )
+  );
   // Update on a branch or as soon as a request is issued
   assign fetch_addr_en = branch_i | (valid_new_req & ~valid_req_q);
 
@@ -184,7 +200,7 @@ module ibex_prefetch_buffer (
                         // Current address + 4
                         {{29{1'b0}},(valid_new_req & ~valid_req_q),2'b00};
 
-  always_ff @(posedge clk_i or negedge rst_ni) begin
+  always_ff @(posedge clk_int_fetch or negedge rst_ni) begin
     if (!rst_ni) begin
       fetch_addr_q <= 32'h00000000;
     end else if (fetch_addr_en) begin

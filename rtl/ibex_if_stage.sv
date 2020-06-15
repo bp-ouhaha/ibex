@@ -195,6 +195,8 @@ module ibex_if_stage #(
         .clk_i             ( clk_i                       ),
         .rst_ni            ( rst_ni                      ),
 
+        .test_en_i         ( test_en_i                   ),
+
         .req_i             ( req_i                       ),
 
         .branch_i          ( branch_req                  ),
