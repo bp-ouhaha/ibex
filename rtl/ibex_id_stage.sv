@@ -30,7 +30,6 @@ module ibex_id_stage #(
 
     input  logic                      test_en_i,     // enable all clock gates for testing
 
-    input  logic                      fetch_enable_i,
     output logic                      ctrl_busy_o,
     output logic                      illegal_insn_o,
 
@@ -535,7 +534,6 @@ module ibex_id_stage #(
       .clk_i                          ( clk_i                   ),
       .rst_ni                         ( rst_ni                  ),
 
-      .fetch_enable_i                 ( fetch_enable_i          ),
       .ctrl_busy_o                    ( ctrl_busy_o             ),
 
       // decoder related signals
