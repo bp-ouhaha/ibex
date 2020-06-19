@@ -15,7 +15,6 @@ module ibex_controller #(
     input  logic                  clk_i,
     input  logic                  rst_ni,
 
-    input  logic                  fetch_enable_i,        // start decoding
     output logic                  ctrl_busy_o,           // core is busy processing instrs
 
     // decoder related signals
