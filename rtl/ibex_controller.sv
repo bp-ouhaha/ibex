@@ -401,7 +401,6 @@ module ibex_controller #(
         pc_set_o      = 1'b1;
         pc_set_spec_o = 1'b1;
         ctrl_fsm_ns   = BOOT_SET;
-        ctrl_busy_o   = 1'b0;
       end
 
       BOOT_SET: begin
