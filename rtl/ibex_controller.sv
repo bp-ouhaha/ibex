@@ -15,7 +15,6 @@ module ibex_controller #(
     input  logic                  clk_i,
     input  logic                  rst_ni,
 
-    input  logic                  fetch_enable_i,        // start decoding
     output logic                  ctrl_busy_o,           // core is busy processing instrs
 
     // decoder related signals
@@ -401,9 +400,7 @@ module ibex_controller #(
         pc_mux_o      = PC_BOOT;
         pc_set_o      = 1'b1;
         pc_set_spec_o = 1'b1;
-        if (fetch_enable_i) begin
-          ctrl_fsm_ns = BOOT_SET;
-        end
+        ctrl_fsm_ns   = BOOT_SET;
       end
 
       BOOT_SET: begin
