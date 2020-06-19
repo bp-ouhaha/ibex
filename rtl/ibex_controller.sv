@@ -395,7 +395,6 @@ module ibex_controller #(
 
     unique case (ctrl_fsm_cs)
       RESET: begin
-        // just wait for fetch_enable
         instr_req_o   = 1'b0;
         pc_mux_o      = PC_BOOT;
         pc_set_o      = 1'b1;
