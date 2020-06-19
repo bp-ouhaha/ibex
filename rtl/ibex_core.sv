@@ -354,7 +354,7 @@ module ibex_core #(
     end
   end
 
-  assign clock_en     = core_busy_q | debug_req_i | irq_pending | irq_nm_i | fetch_enable_i;
+  assign clock_en     = core_busy_q | debug_req_i | irq_pending | irq_nm_i;
   assign core_sleep_o = ~clock_en;
 
   // main clock gate of the core
