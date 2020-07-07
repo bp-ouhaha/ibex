@@ -230,15 +230,15 @@ module ibex_fetch_fifo #(
     end
   end
 
-  //logic [DEPTH-1:0] mem_clocks;
+  logic [DEPTH-1:0] mem_clocks;
   for (genvar i = 0; i < DEPTH; i++) begin : g_fifo_regs
-    //prim_clock_gating cg_i (
-    //    .clk_i     ( clk_i         ),
-    //    .en_i      ( entry_en[i]   ),
-    //    .test_en_i ( test_en_i     ),
-    //    .clk_o     ( mem_clocks[i] )
-    //);
-    always_ff @(posedge clk_i or negedge rst_ni) begin
+    prim_clock_gating cg_i (
+        .clk_i     ( clk_i         ),
+        .en_i      ( entry_en[i]   ),
+        .test_en_i ( test_en_i     ),
+        .clk_o     ( mem_clocks[i] )
+    );
+    always_ff @(posedge mem_clocks[i] or negedge rst_ni) begin
       if (!rst_ni) begin
         rdata_q[i]   <= 32'h00000000;
         err_q[i]     <= 1'b0;
