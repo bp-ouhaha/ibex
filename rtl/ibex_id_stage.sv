@@ -17,13 +17,13 @@
 `include "prim_assert.sv"
 
 module ibex_id_stage #(
-    parameter bit RV32E           = 0,
-    parameter bit RV32M           = 1,
-    parameter bit RV32B           = 0,
-    parameter bit DataIndTiming   = 1'b0,
-    parameter bit BranchTargetALU = 0,
-    parameter bit SpecBranch      = 0,
-    parameter bit WritebackStage  = 0
+    parameter bit               RV32E           = 0,
+    parameter bit               RV32M           = 1,
+    parameter ibex_pkg::rv32b_e RV32B           = ibex_pkg::RV32BNone,
+    parameter bit               DataIndTiming   = 1'b0,
+    parameter bit               BranchTargetALU = 0,
+    parameter bit               SpecBranch      = 0,
+    parameter bit               WritebackStage  = 0
 ) (
     input  logic                      clk_i,
     input  logic                      rst_ni,
@@ -70,9 +70,9 @@ module ibex_id_stage #(
     output logic [31:0]               alu_operand_b_ex_o,
 
     // Multicycle Operation Stage Register
-    input  logic                      imd_val_we_ex_i,
-    input  logic [33:0]               imd_val_d_ex_i,
-    output logic [33:0]               imd_val_q_ex_o,
+    input  logic [1:0]                imd_val_we_ex_i,
+    input  logic [33:0]               imd_val_d_ex_i[2],
+    output logic [33:0]               imd_val_q_ex_o[2],
 
     // Branch target ALU
     output logic [31:0]               bt_a_operand_o,
@@ -249,7 +249,7 @@ module ibex_id_stage #(
   logic        alu_multicycle_dec;
   logic        stall_alu;
 
-  logic [33:0] imd_val_q;
+  logic [33:0] imd_val_q[2];
 
   op_a_sel_e   bt_a_mux_sel;
   imm_b_sel_e  bt_b_mux_sel;
@@ -380,19 +380,21 @@ module ibex_id_stage #(
   /////////////////////////////////////////
   // Multicycle Operation Stage Register //
   /////////////////////////////////////////
-  logic clk_int;
-  prim_clock_gating cg_i (
-      .clk_i     ( clk_i           ),
-      .en_i      ( imd_val_we_ex_i ),
-      .test_en_i ( test_en_i       ),
-      .clk_o     ( clk_int         )
-  );
+  logic [1:0] clk_int;
 
-  always_ff @(posedge clk_int or negedge rst_ni) begin : intermediate_val_reg
-    if (!rst_ni) begin
-      imd_val_q <= '0;
-    end else if (imd_val_we_ex_i) begin
-      imd_val_q <= imd_val_d_ex_i;
+  for (genvar i=0; i<2; i++) begin : gen_intermediate_val_reg
+    prim_clock_gating cg_i (
+        .clk_i     ( clk_i              ),
+        .en_i      ( imd_val_we_ex_i[i] ),
+        .test_en_i ( test_en_i          ),
+        .clk_o     ( clk_int[i]         )
+    );
+    always_ff @(posedge clk_int[i] or negedge rst_ni) begin : intermediate_val_reg
+      if (!rst_ni) begin
+        imd_val_q[i] <= '0;
+      end else if (imd_val_we_ex_i[i]) begin
+        imd_val_q[i] <= imd_val_d_ex_i[i];
+      end
     end
   end
 
@@ -823,12 +825,6 @@ module ibex_id_stage #(
 
   assign instr_done = ~stall_id & ~flush_id & instr_executing;
 
-  if (WritebackStage) begin
-    assign multicycle_done = lsu_req_dec ? ~stall_mem : ex_valid_i;
-  end else begin
-    assign multicycle_done = lsu_req_dec ? lsu_resp_valid_i : ex_valid_i;
-  end
-
   // Signal instruction in ID is in it's first cycle. It can remain in its
   // first cycle if it is stalled.
   assign instr_first_cycle      = instr_valid_i & (id_fsm_q == FIRST_CYCLE);
@@ -847,6 +843,8 @@ module ibex_id_stage #(
     logic outstanding_memory_access;
 
     logic instr_kill;
+
+    assign multicycle_done = lsu_req_dec ? ~stall_mem : ex_valid_i;
 
     // Is a memory access ongoing that isn't finishing this cycle
     assign outstanding_memory_access = (outstanding_load_wb_i | outstanding_store_wb_i) &
@@ -927,7 +925,9 @@ module ibex_id_stage #(
     assign stall_wb = en_wb_o & ~ready_wb_i;
 
     assign perf_dside_wait_o = instr_valid_i & ~instr_kill & (outstanding_memory_access | stall_ld_hz);
-  end else begin
+  end else begin : gen_no_stall_mem
+
+    assign multicycle_done = lsu_req_dec ? lsu_resp_valid_i : ex_valid_i;
 
     assign data_req_allowed = instr_first_cycle;
 

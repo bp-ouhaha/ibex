@@ -14,6 +14,14 @@ class ibex_icache_base_vseq
   // Should we generate ECC errors in the underlying SRAM objects?
   bit enable_ecc_errors = 0;
 
+  // The mem_err_shift parameter to use for the memory model with this sequence. Gets written to the
+  // sequencer's config when the sequence runs.
+  int unsigned mem_err_shift = 3;
+
+  // Non-null if this is an item after the first in a "combo" run, which runs several of these
+  // sequences back-to-back. Must be set before pre_start to have any effect.
+  ibex_icache_base_vseq prev_sequence = null;
+
   // The core and memory sequences. We don't subclass them in subclasses of this virtual sequence,
   // but we might want to set control knobs. To allow this, we construct the sequences in pre_start.
   // Subclasses should override pre_start, call this super to construct the sequence, and then set
@@ -25,14 +33,36 @@ class ibex_icache_base_vseq
   ibex_icache_ecc_base_seq  ecc_tag_seqs[];
   ibex_icache_ecc_base_seq  ecc_data_seqs[];
 
-  virtual task dut_init(string reset_kind = "HARD");
-    super.dut_init();
-  endtask
+  // The number of transactions to run (passed to the core sequence). This gets randomised to
+  // something sensible by default, but can be overridden by setting it before starting the
+  // sequence.
+  constraint num_trans_c { num_trans inside {[800:1000]}; }
 
   virtual task pre_start();
     super.pre_start();
+
     `uvm_create_on(core_seq, p_sequencer.core_sequencer_h)
     `uvm_create_on(mem_seq, p_sequencer.mem_sequencer_h)
+
+    // Unlike the other sequences, the core sequence has a finite number of items. Set that to our
+    // number of transactions here.
+    core_seq.num_trans = num_trans;
+
+    if (prev_sequence != null) begin
+      // If there was a previous sequence, pass it down to core_seq and mem_seq
+      core_seq.prev_sequence = prev_sequence.core_seq;
+      mem_seq.prev_sequence = prev_sequence.mem_seq;
+
+      // If the new memory sequence will change mem_err_shift, we need to tell the core to
+      // invalidate at the start of its sequence.
+      if (cfg.mem_agent_cfg.mem_err_shift != mem_err_shift) begin
+        core_seq.must_invalidate = 1'b1;
+      end
+    end
+
+    // Write mem_err_shift into the config object (which the scoreboard and memory sequence will
+    // both see)
+    cfg.mem_agent_cfg.mem_err_shift = mem_err_shift;
 
     // If enable_ecc_errors then create any ECC sequences we need (one for each sequencer in
     // p_sequencer.ecc_tag_sequencers and p_sequencer.ecc_data_sequencers).
@@ -72,6 +102,11 @@ class ibex_icache_base_vseq
       join
     join_any
 
+    // The core sequence has finished. Kill all the other sequences
+    mem_seq.kill();
+    foreach (ecc_tag_seqs[i]) ecc_tag_seqs[i].kill();
+    foreach (ecc_data_seqs[i]) ecc_data_seqs[i].kill();
+
   endtask : body
 
   // Randomize and then run a given (never ending) ECC sequence on the given sequencer. Returns
@@ -81,11 +116,6 @@ class ibex_icache_base_vseq
     fork begin
       seq.start(sqr);
     end join_none
-  endtask
-
-  virtual task dut_shutdown();
-    // check for pending ibex_icache operations and wait for them to complete
-    // TODO
   endtask
 
 endclass : ibex_icache_base_vseq
