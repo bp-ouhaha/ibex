@@ -19,6 +19,7 @@ module ibex_multdiv_fast #(
   ) (
     input  logic             clk_i,
     input  logic             rst_ni,
+    input  logic             test_en_i,
     input  logic             mult_en_i,  // dynamic enable signal, for FSM control
     input  logic             div_en_i,   // dynamic enable signal, for FSM control
     input  logic             mult_sel_i, // static decoder output, for data muxes
@@ -95,15 +96,15 @@ module ibex_multdiv_fast #(
   assign mult_en_internal = mult_en_i & ~mult_hold;
   assign div_en_internal  = div_en_i & ~div_hold;
 
-  //logic clk_int;
-  //prim_clock_gating cg_div_i (
-  //    .clk_i     ( clk_i           ),
-  //    .en_i      ( div_en_internal ),
-  //    .test_en_i ( test_en_i       ),
-  //    .clk_o     ( clk_int         )
-  //);
+  logic clk_int;
+  prim_clock_gating cg_div_i (
+      .clk_i     ( clk_i           ),
+      .en_i      ( div_en_internal ),
+      .test_en_i ( test_en_i       ),
+      .clk_o     ( clk_int         )
+  );
 
-  always_ff @(posedge clk_i or negedge rst_ni) begin
+  always_ff @(posedge clk_int or negedge rst_ni) begin
     if (!rst_ni) begin
       div_counter_q    <= '0;
       md_state_q       <= MD_IDLE;

@@ -15,6 +15,7 @@ module ibex_multdiv_slow
 (
     input  logic             clk_i,
     input  logic             rst_ni,
+    input  logic             test_en_i,
     input  logic             mult_en_i,  // dynamic enable signal, for FSM control
     input  logic             div_en_i,   // dynamic enable signal, for FSM control
     input  logic             mult_sel_i, // static decoder output, for data muxes
@@ -329,15 +330,15 @@ module ibex_multdiv_slow
 
   assign multdiv_en = (mult_en_i | div_en_i) & ~multdiv_hold;
 
-  //logic clk_int;
-  //prim_clock_gating cg_div_i (
-  //    .clk_i     ( clk_i      ),
-  //    .en_i      ( multdiv_en ),
-  //    .test_en_i ( test_en_i  ),
-  //    .clk_o     ( clk_int    )
-  //);
+  logic clk_int;
+  prim_clock_gating cg_div_i (
+      .clk_i     ( clk_i      ),
+      .en_i      ( multdiv_en ),
+      .test_en_i ( test_en_i  ),
+      .clk_o     ( clk_int    )
+  );
 
-  always_ff @(posedge clk_i or negedge rst_ni) begin
+  always_ff @(posedge clk_int or negedge rst_ni) begin
     if (!rst_ni) begin
       multdiv_count_q  <= 5'h0;
       op_b_shift_q     <= 33'h0;
