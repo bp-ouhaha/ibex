@@ -104,7 +104,7 @@ module ibex_multdiv_fast #(
       .clk_o     ( clk_int         )
   );
 
-  always_ff @(posedge clk_int or negedge rst_ni) begin
+  always_ff @(posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) begin
       div_counter_q    <= '0;
       md_state_q       <= MD_IDLE;

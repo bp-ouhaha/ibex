@@ -154,7 +154,7 @@ module ibex_fetch_fifo #(
       .test_en_i ( test_en_i          ),
       .clk_o     ( clk_int_instr_addr )
   );
-  always_ff @(posedge clk_int_instr_addr or negedge rst_ni) begin
+  always_ff @(posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) begin
       instr_addr_q <= 31'h00000000;
     end else if (instr_addr_en) begin

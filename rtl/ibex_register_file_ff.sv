@@ -60,7 +60,7 @@ module ibex_register_file #(
         .test_en_i ( test_en_i    ),
         .clk_o     ( mem_clocks[i])
     );
-    always_ff @(posedge mem_clocks[i] or negedge rst_ni) begin
+    always_ff @(posedge clk_i or negedge rst_ni) begin
       if (!rst_ni) begin
         rf_reg_q[i] <= '0;
       end else if(we_a_dec[i]) begin

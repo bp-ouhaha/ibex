@@ -176,3 +176,13 @@ lint_off -rule UNOPTFLAT -file "*/rtl/ibex_if_stage.sv" -match "*.instr_new_id_d
 lint_off -rule UNOPTFLAT -file "*/rtl/ibex_multdiv_fast.sv" -match "*.div_en_internal*"
 lint_off -rule UNOPTFLAT -file "*/rtl/ibex_load_store_unit.sv" -match "*.addr_update*"
 lint_off -rule UNOPTFLAT -file "*/rtl/ibex_fetch_fifo.sv" -match "*.instr_addr_en*"
+
+lint_off -rule UNUSED -file "*/rtl/ibex_id_stage.sv" -match "*.clk_int*"
+lint_off -rule UNUSED -file "*/rtl/ibex_if_stage.sv" -match "*.clk_int*"
+lint_off -rule UNUSED -file "*/rtl/ibex_load_store_unit.sv" -match "*.clk_int_rdata*"
+lint_off -rule UNUSED -file "*/rtl/ibex_load_store_unit.sv" -match "*.clk_int_addr*"
+lint_off -rule UNUSED -file "*/rtl/ibex_register_file_ff.sv" -match "*.mem_clocks*"
+lint_off -rule UNUSED -file "*/rtl/ibex_multdiv_fast.sv" -match "*.clk_int*"
+lint_off -rule UNUSED -file "*/rtl/ibex_prefetch_buffer.sv" -match "*.clk_int_stored*"
+lint_off -rule UNUSED -file "*/rtl/ibex_prefetch_buffer.sv" -match "*.clk_int_fetch*"
+lint_off -rule UNUSED -file "*/rtl/ibex_fetch_fifo.sv" -match "*.clk_int_instr_addr*"

@@ -341,7 +341,7 @@ module ibex_if_stage #(
       .clk_o     ( clk_int           )
   );
 
-  always_ff @(posedge clk_int or negedge rst_ni) begin
+  always_ff @(posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) begin
       instr_rdata_id_o         <= 32'h00000000;
       instr_rdata_alu_id_o     <= 32'h00000000;

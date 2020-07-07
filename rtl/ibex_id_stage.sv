@@ -389,7 +389,7 @@ module ibex_id_stage #(
         .test_en_i ( test_en_i          ),
         .clk_o     ( clk_int[i]         )
     );
-    always_ff @(posedge clk_int[i] or negedge rst_ni) begin : intermediate_val_reg
+    always_ff @(posedge clk_i or negedge rst_ni) begin : intermediate_val_reg
       if (!rst_ni) begin
         imd_val_q[i] <= '0;
       end else if (imd_val_we_ex_i[i]) begin
