@@ -162,3 +162,17 @@ lint_off -rule UNOPTFLAT -file "*/rtl/ibex_cs_registers.sv" -match "*ibex_core.c
 // Temporary waivers until OpenTitan primitives are lint-clean
 // https://github.com/lowRISC/opentitan/issues/2313
 lint_off -file "*/lowrisc_prim_*/rtl/*.sv"
+
+// added for clockgated variant
+lint_off -rule MULTIDRIVEN -file "*/rtl/ibex_fetch_fifo.sv" -match "*rdata_q*"
+lint_off -rule MULTIDRIVEN -file "*/rtl/ibex_fetch_fifo.sv" -match "*err_q*"
+lint_off -rule MULTIDRIVEN -file "*/rtl/ibex_id_stage.sv" -match "*imd_val_q*"
+lint_off -rule MULTIDRIVEN -file "*/rtl/ibex_register_file_ff.sv" -match "*rf_reg_q*"
+lint_off -rule UNOPTFLAT -file "*/rtl/prim_generic_clock_gating.sv" -match "*.en_latch*"
+lint_off -rule UNOPTFLAT -file "*/rtl/ibex_prefetch_buffer.sv" -match "*.fetch_addr_en*"
+lint_off -rule UNOPTFLAT -file "*/rtl/ibex_register_file_ff.sv" -match "*.we_a_dec*"
+lint_off -rule UNOPTFLAT -file "*/rtl/ibex_core.sv" -match "*.imd_val_we_ex*"
+lint_off -rule UNOPTFLAT -file "*/rtl/ibex_if_stage.sv" -match "*.instr_new_id_d*"
+lint_off -rule UNOPTFLAT -file "*/rtl/ibex_multdiv_fast.sv" -match "*.div_en_internal*"
+lint_off -rule UNOPTFLAT -file "*/rtl/ibex_load_store_unit.sv" -match "*.addr_update*"
+lint_off -rule UNOPTFLAT -file "*/rtl/ibex_fetch_fifo.sv" -match "*.instr_addr_en*"

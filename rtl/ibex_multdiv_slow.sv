@@ -15,6 +15,7 @@ module ibex_multdiv_slow
 (
     input  logic             clk_i,
     input  logic             rst_ni,
+    input  logic             test_en_i,
     input  logic             mult_en_i,  // dynamic enable signal, for FSM control
     input  logic             div_en_i,   // dynamic enable signal, for FSM control
     input  logic             mult_sel_i, // static decoder output, for data muxes
