@@ -22,8 +22,6 @@ module ibex_if_stage #(
     input  logic                   clk_i,
     input  logic                   rst_ni,
 
-    input  logic                   test_en_i,     // enable all clock gates for testing
-
     input  logic [31:0]            boot_addr_i,              // also used for mtvec
     input  logic                   req_i,                    // instruction request control
 
@@ -195,8 +193,6 @@ module ibex_if_stage #(
         .clk_i             ( clk_i                       ),
         .rst_ni            ( rst_ni                      ),
 
-        .test_en_i         ( test_en_i                   ),
-
         .req_i             ( req_i                       ),
 
         .branch_i          ( branch_req                  ),
@@ -333,13 +329,13 @@ module ibex_if_stage #(
   // IF-ID pipeline registers, frozen when the ID stage is stalled
   assign if_id_pipe_reg_we = instr_new_id_d;
 
-  logic clk_int;
-  prim_clock_gating cg_i (
-      .clk_i     ( clk_i             ),
-      .en_i      ( if_id_pipe_reg_we ),
-      .test_en_i ( test_en_i         ),
-      .clk_o     ( clk_int           )
-  );
+  //logic clk_int;
+  //prim_clock_gating cg_i (
+  //    .clk_i     ( clk_i             ),
+  //    .en_i      ( if_id_pipe_reg_we ),
+  //    .test_en_i ( test_en_i         ),
+  //    .clk_o     ( clk_int           )
+  //);
 
   always_ff @(posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) begin

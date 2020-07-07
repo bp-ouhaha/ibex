@@ -18,8 +18,6 @@ module ibex_fetch_fifo #(
     input  logic                clk_i,
     input  logic                rst_ni,
 
-    input  logic                test_en_i,     // enable all clock gates for testing
-
     // control signals
     input  logic                clear_i,   // clears the contents of the FIFO
     output logic [NUM_REQS-1:0] busy_o,
@@ -147,13 +145,13 @@ module ibex_fetch_fifo #(
                                    // Increment address by 4 or 2
                                    {29'd0,~addr_incr_two,addr_incr_two});
 
-  logic clk_int_instr_addr;
-  prim_clock_gating cg_instr_addr_i (
-      .clk_i     ( clk_i              ),
-      .en_i      ( instr_addr_en      ),
-      .test_en_i ( test_en_i          ),
-      .clk_o     ( clk_int_instr_addr )
-  );
+  //logic clk_int_instr_addr;
+  //prim_clock_gating cg_instr_addr_i (
+  //    .clk_i     ( clk_i              ),
+  //    .en_i      ( instr_addr_en      ),
+  //    .test_en_i ( test_en_i          ),
+  //    .clk_o     ( clk_int_instr_addr )
+  //);
   always_ff @(posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) begin
       instr_addr_q <= 31'h00000000;
@@ -230,15 +228,15 @@ module ibex_fetch_fifo #(
     end
   end
 
-  logic [DEPTH-1:0] mem_clocks;
+  //logic [DEPTH-1:0] mem_clocks;
   for (genvar i = 0; i < DEPTH; i++) begin : g_fifo_regs
-    prim_clock_gating cg_i (
-        .clk_i     ( clk_i         ),
-        .en_i      ( entry_en[i]   ),
-        .test_en_i ( test_en_i     ),
-        .clk_o     ( mem_clocks[i] )
-    );
-    always_ff @(posedge mem_clocks[i] or negedge rst_ni) begin
+    //prim_clock_gating cg_i (
+    //    .clk_i     ( clk_i         ),
+    //    .en_i      ( entry_en[i]   ),
+    //    .test_en_i ( test_en_i     ),
+    //    .clk_o     ( mem_clocks[i] )
+    //);
+    always_ff @(posedge clk_i or negedge rst_ni) begin
       if (!rst_ni) begin
         rdata_q[i]   <= 32'h00000000;
         err_q[i]     <= 1'b0;

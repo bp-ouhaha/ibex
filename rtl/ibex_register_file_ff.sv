@@ -52,14 +52,14 @@ module ibex_register_file #(
   end
 
   // No flops for R0 as it's hard-wired to 0
-  logic [NUM_WORDS-1:1] mem_clocks;
+  //logic [NUM_WORDS-1:1] mem_clocks;
   for (genvar i = 1; i < NUM_WORDS; i++) begin : g_rf_flops
-    prim_clock_gating cg_i (
-        .clk_i     ( clk_i        ),
-        .en_i      ( we_a_dec[i]  ),
-        .test_en_i ( test_en_i    ),
-        .clk_o     ( mem_clocks[i])
-    );
+    //prim_clock_gating cg_i (
+    //    .clk_i     ( clk_i        ),
+    //    .en_i      ( we_a_dec[i]  ),
+    //    .test_en_i ( test_en_i    ),
+    //    .clk_o     ( mem_clocks[i])
+    //);
     always_ff @(posedge clk_i or negedge rst_ni) begin
       if (!rst_ni) begin
         rf_reg_q[i] <= '0;
