@@ -331,10 +331,10 @@ module ibex_multdiv_slow
 
   logic clk_int;
   prim_clock_gating cg_div_i (
-      .clk_i     ( clk_i           ),
-      .en_i      ( div_en_internal ),
-      .test_en_i ( test_en_i       ),
-      .clk_o     ( clk_int         )
+      .clk_i     ( clk_i      ),
+      .en_i      ( multdiv_en ),
+      .test_en_i ( test_en_i  ),
+      .clk_o     ( clk_int    )
   );
 
   always_ff @(posedge clk_int or negedge rst_ni) begin
